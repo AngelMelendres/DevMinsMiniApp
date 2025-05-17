@@ -46,6 +46,11 @@ export const Login = () => {
           body: JSON.stringify({
             payload: finalPayload,
             nonce,
+            user: {
+              walletAddress: MiniKit.user.walletAddress,
+              username: MiniKit.user.username,
+              profilePictureUrl: MiniKit.user.profilePictureUrl,
+            },
           }),
         });
 
@@ -78,7 +83,7 @@ export const Login = () => {
 
       setUser(null);
       localStorage.removeItem("user");
-      window.dispatchEvent(new Event("storage")); 
+      window.dispatchEvent(new Event("storage"));
       setUser(null);
     } catch (error) {
       console.error("Logout error:", error);

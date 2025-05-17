@@ -106,11 +106,6 @@ export default function Home() {
               segura y verificable.
             </p>
             <div className="pt-2">
-              {/* <Link href="/register">
-                <Button className="w-full gap-2">
-                  Iniciar Sesion <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link> */}
               <Login />
             </div>
           </div>

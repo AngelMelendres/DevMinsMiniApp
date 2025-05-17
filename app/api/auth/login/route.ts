@@ -1,3 +1,4 @@
+import { supabase } from "@/lib/supabase"; // Ajusta esta ruta según tu estructura
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -10,55 +11,93 @@ import { nanoid } from "nanoid";
 interface IRequestPayload {
   payload: MiniAppWalletAuthSuccessPayload;
   nonce: string;
-}
-// Mock implementation - replace with actual DB call
-async function findOrCreateUser(walletAddress: string) {
-  console.log(`Finding or creating user with wallet: ${walletAddress}`);
-
-  /* return {
-		id: crypto.randomUUID(),
-		walletAddress,
-		username: null,
-		profilePictureUrl: null,
-		isNewUser: true
-	}; */
-
-  return {
-    id: walletAddress.toLowerCase(), // ✅ usar como ID consistente
-    walletAddress: walletAddress.toLowerCase(),
-    username: null,
-    profilePictureUrl: null,
-    isNewUser: false,
+  user: {
+    walletAddress: string;
+    username: string | null;
+    profilePictureUrl: string | null;
   };
 }
 
 export const POST = async (req: NextRequest) => {
-  const { payload, nonce } = (await req.json()) as IRequestPayload;
-  const cookieStore = await cookies();
+  const { payload, nonce, user } = (await req.json()) as IRequestPayload;
+  const cookieStore = cookies();
   const siwe = cookieStore.get("siwe");
 
-  if (nonce != siwe?.value) {
-    return NextResponse.json({
-      status: "error",
-      isValid: false,
-    });
+  if (nonce !== siwe?.value) {
+    return NextResponse.json({ status: "error", isValid: false });
   }
 
   try {
     const validMessage = await verifySiweMessage(payload, nonce);
 
     if (!validMessage.isValid) {
-      return NextResponse.json({
-        status: "error",
-        isValid: false,
-      });
+      return NextResponse.json({ status: "error", isValid: false });
     }
 
-    const walletAddress = payload.address;
-    const user = await findOrCreateUser(walletAddress);
+    const walletAddress = payload.address.toLowerCase();
+    const worldName = user.username;
+    const picture = user.profilePictureUrl;
 
+    // Buscar usuario en Supabase
+    const { data: existingUser, error: fetchError } = await supabase
+      .from("usuarios")
+      .select("*")
+      .eq("id", walletAddress)
+      .single();
+
+    let dbUser;
+
+    if (fetchError) {
+      // Crear nuevo usuario
+      const { data: newUser, error: insertError } = await supabase
+        .from("usuarios")
+        .insert([
+          {
+            id: walletAddress,
+            wallet_address: walletAddress,
+            world_name: worldName,
+            picture: picture,
+          },
+        ])
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error("Error insertando usuario:", insertError);
+        return NextResponse.json({
+          status: "error",
+          message: "No se pudo crear usuario",
+        });
+      }
+
+      dbUser = newUser;
+    } else {
+      // Actualizar datos si el usuario ya existe
+      const { data: updatedUser, error: updateError } = await supabase
+        .from("usuarios")
+        .update({
+          wallet_address: walletAddress,
+          world_name: worldName,
+          picture: picture,
+        })
+        .eq("id", walletAddress)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error("Error actualizando usuario:", updateError);
+        return NextResponse.json({
+          status: "error",
+          message: "No se pudo actualizar usuario",
+        });
+      }
+
+      dbUser = updatedUser;
+    }
+
+    // Crear JWT
     const token = await new SignJWT({
-      userId: user.id,
+      userId: dbUser.id,
       walletAddress,
     })
       .setProtectedHeader({ alg: "HS256" })
@@ -67,35 +106,24 @@ export const POST = async (req: NextRequest) => {
       .setJti(nanoid())
       .sign(
         new TextEncoder().encode(
-          process.env.JWT_SECRET || "fallback_secret_replace_in_production"
+          process.env.JWT_SECRET || "fallback_secret"
         )
       );
 
     cookieStore.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 
     return NextResponse.json({
       status: "success",
       isValid: true,
-      user: {
-        id: user.id,
-        walletAddress: user.walletAddress,
-        username: user.username,
-        profilePictureUrl: user.profilePictureUrl,
-        isNewUser: user.isNewUser,
-      },
+      user: dbUser,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    // Handle errors in validation or processing
-    return NextResponse.json({
-      status: "error",
-      isValid: false,
-      message: error.message,
-    });
+    console.error("Login error:", error);
+    return NextResponse.json({ status: "error", message: error.message });
   }
 };
