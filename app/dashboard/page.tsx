@@ -34,17 +34,17 @@ export default function DashboardPage() {
           </div>
 
           {/* Search */}
-          <div className="relative mb-4">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <div className="relative flex gap-4 mt-6 mb-4 justify-center">
             <Input
               type="search"
-              placeholder="Buscar proyectos o certificados..."
-              className="pl-8"
+              placeholder="Buscar proyectos..."
+              className="pr-8 w-full max-w-xs"
             />
+            <Search className="absolute right-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="grid grid-cols-2 gap-2 mb-4">
             <Card>
               <CardContent className="p-3">
                 <div className="text-xl font-bold">3</div>
@@ -59,17 +59,11 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardContent className="p-3">
-                <div className="text-xl font-bold">12</div>
-                <div className="text-xs text-muted-foreground">Descargas</div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Main Tabs */}
           <Tabs defaultValue="all" className="w-full mb-4">
-            <TabsList className="grid grid-cols-4 h-9">
+            <TabsList className="grid grid-cols-3 h-9">
               <TabsTrigger value="all" className="text-xs">
                 Todos
               </TabsTrigger>
@@ -79,38 +73,35 @@ export default function DashboardPage() {
               <TabsTrigger value="shared" className="text-xs">
                 Compartidos
               </TabsTrigger>
-              <TabsTrigger value="verified" className="text-xs">
-                Verificados
-              </TabsTrigger>
             </TabsList>
           </Tabs>
 
-          {/* Projects List */}
           <div className="space-y-4">
-            {/* Project 1 */}
-            <div>
-              <Link href="/dashboard/project/1">
+            {/* Project Cards */}
+
+            {[1, 2, 3].map((id) => (
+              <Link key={id} href={`/dashboard/project/${id}`}>
                 <Card className="mb-1">
                   <CardContent className="p-3">
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="font-medium text-sm">
-                            MVP Aplicación Móvil
+                            MVP Aplicación Móvil {id+1}
                           </h3>
                           <Badge variant="outline" className="text-[10px] h-4">
                             Protegido
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          Subido: 15/05/2025
+                          Subido: {15 + id}/05/2025
                         </p>
                         <div className="flex items-center gap-2 mt-1">
                           <div className="bg-primary/10 px-1.5 py-0.5 rounded text-[10px] font-medium text-primary">
-                            PDF
+                            Tipo:
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            1.2 MB
+                            Software
                           </p>
                         </div>
                       </div>
@@ -119,183 +110,7 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </Link>
-
-              {/* Associated Certificate */}
-              <Link href="/certificate/1" className="block ml-4">
-                <Card className="border-primary/20 bg-primary/5">
-                  <CardContent className="p-2 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-primary" />
-                      <div>
-                        <p className="text-xs font-medium">
-                          Certificado Digital
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          15/05/2025
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <Download className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <Share2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-
-            {/* Project 2 */}
-            <div>
-              <Link href="/dashboard/project/2">
-                <Card className="mb-1">
-                  <CardContent className="p-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium text-sm">
-                            Diseño de Logo
-                          </h3>
-                          <Badge variant="outline" className="text-[10px] h-4">
-                            Protegido
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Subido: 10/05/2025
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className="bg-primary/10 px-1.5 py-0.5 rounded text-[10px] font-medium text-primary">
-                            PNG
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            3.5 MB
-                          </p>
-                        </div>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-
-              {/* Associated Certificate */}
-              <Link href="/certificate/2" className="block ml-4">
-                <Card className="border-primary/20 bg-primary/5">
-                  <CardContent className="p-2 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-primary" />
-                      <div>
-                        <p className="text-xs font-medium">
-                          Certificado Digital
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          10/05/2025
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <Download className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <Share2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-
-            {/* Project 3 */}
-            <div>
-              <Link href="/dashboard/project/3">
-                <Card className="mb-1">
-                  <CardContent className="p-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium text-sm">
-                            Propuesta de Negocio
-                          </h3>
-                          <Badge variant="outline" className="text-[10px] h-4">
-                            Protegido
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Subido: 01/05/2025
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className="bg-primary/10 px-1.5 py-0.5 rounded text-[10px] font-medium text-primary">
-                            DOCX
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            0.8 MB
-                          </p>
-                        </div>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-
-              {/* Associated Certificates (multiple) */}
-              <div className="ml-4 space-y-1">
-                <Link href="/certificate/3" className="block">
-                  <Card className="border-primary/20 bg-primary/5">
-                    <CardContent className="p-2 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-primary" />
-                        <div>
-                          <p className="text-xs font-medium">
-                            Certificado Digital
-                          </p>
-                          <p className="text-[10px] text-muted-foreground">
-                            01/05/2025
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-6 w-6">
-                          <Download className="h-3 w-3" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6">
-                          <Share2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-                <Link href="/certificate/4" className="block">
-                  <Card className="border-primary/20 bg-primary/5">
-                    <CardContent className="p-2 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-primary" />
-                        <div>
-                          <p className="text-xs font-medium">
-                            Certificado Universidad
-                          </p>
-                          <p className="text-[10px] text-muted-foreground">
-                            03/05/2025
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-6 w-6">
-                          <Download className="h-3 w-3" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6">
-                          <Share2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </div>
-            </div>
+            ))}
 
             {/* Add New Project */}
             <Link href="/dashboard/upload" className="block">
