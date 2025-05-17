@@ -54,22 +54,20 @@ export default function MobileNavbar() {
       <div className="flex items-center justify-around h-16">
         {/* Solo se muestran estos si el usuario está logueado */}
         <Link
-          href="/dashboard"
+          href="/projects"
           className="flex flex-col items-center justify-center w-full"
         >
           <FileText
             className={`h-5 w-5 ${
-              pathname.startsWith("/dashboard") ? "text-primary" : ""
+              pathname.startsWith("/projects") ? "text-primary" : ""
             }`}
           />
           <span
             className={`text-xs mt-1 ${
-              pathname.startsWith("/dashboard")
-                ? "text-primary font-medium"
-                : ""
+              pathname.startsWith("/projects") ? "text-primary font-medium" : ""
             }`}
           >
-            Biblioteca
+            Mis Proyectos
           </span>
         </Link>
 

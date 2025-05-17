@@ -35,19 +35,37 @@ export const Login = () => {
   const handleLogin = async () => {
     try {
       setLoading(true);
+
       const res = await fetch(`/api/nonce`);
       const { nonce } = await res.json();
+      document.cookie = `siwe=${nonce}; path=/; secure`;
+
+      // Asegurar que MiniKit esté instalado
+      while (!MiniKit.isInstalled) {
+        await new Promise((r) => setTimeout(r, 100));
+      }
 
       const { finalPayload } = await MiniKit.commandsAsync.walletAuth(
         walletAuthInput(nonce)
       );
 
       if (finalPayload.status === "error") {
+        console.error("Falló walletAuth:", finalPayload);
         setLoading(false);
         return;
       }
 
-      console.log("finalPayload", MiniKit.user);
+      const miniUser = MiniKit.user;
+
+      if (!miniUser) {
+        console.error("MiniKit.user es null");
+        alert(
+          "No se pudo obtener el usuario. Asegúrate de estar en la World App."
+        );
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,25 +73,18 @@ export const Login = () => {
           payload: finalPayload,
           nonce,
           user: {
-            walletAddress: MiniKit.user.walletAddress,
-            username: MiniKit.user.username,
-            profilePictureUrl: MiniKit.user.profilePictureUrl,
+            walletAddress: miniUser.walletAddress,
+            username: miniUser.username,
+            profilePictureUrl: miniUser.profilePictureUrl,
           },
         }),
       });
 
       if (response.status === 200) {
-        setUser(MiniKit.user);
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            walletAddress: MiniKit.user.walletAddress,
-            username: MiniKit.user.username,
-            profilePictureUrl: MiniKit.user.profilePictureUrl,
-          })
-        );
+        setUser(miniUser);
+        localStorage.setItem("user", JSON.stringify(miniUser));
         window.dispatchEvent(new Event("storage"));
-        router.push("/projects"); // redirección al finalizar login
+        router.push("/projects");
       }
 
       setLoading(false);

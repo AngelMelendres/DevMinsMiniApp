@@ -1,21 +1,34 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ArrowLeft, Calendar, Download, FileText, Share2, Shield, Tag, User } from "lucide-react"
-import MobileHeader from "@/components/mobile-header"
-import MobileNavbar from "@/components/mobile-navbar"
-import { Badge } from "@/components/ui/badge"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  ArrowLeft,
+  Calendar,
+  Download,
+  FileText,
+  Share2,
+  Shield,
+  Tag,
+  User,
+} from "lucide-react";
+import MobileHeader from "@/components/mobile-header";
+import MobileNavbar from "@/components/mobile-navbar";
+import { Badge } from "@/components/ui/badge";
 
 export default function ProjectDetailPage() {
   const backButton = (
     <Link href="/dashboard/projects" className="mr-2">
       <ArrowLeft className="h-5 w-5" />
     </Link>
-  )
+  );
 
   return (
     <div className="flex flex-col min-h-screen max-w-md mx-auto bg-background">
-      <MobileHeader title="Detalle del Proyecto" showLogo={false} backButton={backButton} />
+      <MobileHeader
+        title="Detalle del Proyecto"
+        showLogo={false}
+        backButton={backButton}
+      />
 
       <main className="flex-1 px-4 pb-16">
         <div className="py-4">
@@ -26,7 +39,8 @@ export default function ProjectDetailPage() {
               <Badge className="ml-2">Protegido</Badge>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              Aplicación móvil para gestión de tareas con funcionalidades de colaboración y recordatorios.
+              Aplicación móvil para gestión de tareas con funcionalidades de
+              colaboración y recordatorios.
             </p>
           </div>
 
@@ -47,7 +61,9 @@ export default function ProjectDetailPage() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Fecha de registro</p>
+                  <p className="text-xs text-muted-foreground">
+                    Fecha de registro
+                  </p>
                   <p className="text-sm">15 de Mayo, 2025 14:30</p>
                 </div>
               </div>
@@ -63,7 +79,9 @@ export default function ProjectDetailPage() {
               <div className="flex items-center gap-2">
                 <Tag className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Tipo de proyecto</p>
+                  <p className="text-xs text-muted-foreground">
+                    Tipo de proyecto
+                  </p>
                   <p className="text-sm">Software / Aplicación</p>
                 </div>
               </div>
@@ -71,7 +89,9 @@ export default function ProjectDetailPage() {
               <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Hash de verificación</p>
+                  <p className="text-xs text-muted-foreground">
+                    Hash de verificación
+                  </p>
                   <p className="text-sm font-mono">8f7d56a9c3b2e1d0f4a5...</p>
                 </div>
               </div>
@@ -100,11 +120,13 @@ export default function ProjectDetailPage() {
             <Card>
               <CardContent className="p-3 text-xs">
                 <p className="mb-2">
-                  Este proyecto está protegido mediante registro en IPFS y verificación de identidad con World ID.
+                  Este proyecto está protegido mediante registro en IPFS y
+                  verificación de identidad con World ID.
                 </p>
                 <p>
-                  El certificado digital asociado puede ser verificado en cualquier momento por terceros a través del
-                  enlace de verificación.
+                  El certificado digital asociado puede ser verificado en
+                  cualquier momento por terceros a través del enlace de
+                  verificación.
                 </p>
               </CardContent>
             </Card>
@@ -114,5 +136,5 @@ export default function ProjectDetailPage() {
 
       <MobileNavbar />
     </div>
-  )
+  );
 }
