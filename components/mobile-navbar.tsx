@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, Home, Shield, User } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { FileText, Shield, User, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function MobileNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [user, setUser] = useState<null | { walletAddress: string }>(null);
 
   const loadUser = () => {
@@ -27,102 +28,96 @@ export default function MobileNavbar() {
     }
   };
 
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    localStorage.removeItem("user");
+    window.dispatchEvent(new Event("storage"));
+    setUser(null);
+    router.push("/");
+  };
+
   useEffect(() => {
-    // Cargar usuario al montar
     loadUser();
 
-    // Escuchar cambios en localStorage (ej. desde logout/login)
     const handleStorageChange = () => loadUser();
     window.addEventListener("storage", handleStorageChange);
 
-    // Limpieza al desmontar
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
+  if (!user) return null; // ← si no hay usuario, no se muestra la barra
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-10 bg-background border-t max-w-md mx-auto">
       <div className="flex items-center justify-around h-16">
+        {/* Solo se muestran estos si el usuario está logueado */}
         <Link
-          href="/"
+          href="/dashboard"
           className="flex flex-col items-center justify-center w-full"
         >
-          <Home
-            className={`h-5 w-5 ${pathname === "/" ? "text-primary" : ""}`}
+          <FileText
+            className={`h-5 w-5 ${
+              pathname.startsWith("/dashboard") ? "text-primary" : ""
+            }`}
           />
           <span
             className={`text-xs mt-1 ${
-              pathname === "/" ? "text-primary font-medium" : ""
+              pathname.startsWith("/dashboard")
+                ? "text-primary font-medium"
+                : ""
             }`}
           >
-            Inicio
+            Biblioteca
           </span>
         </Link>
 
-        {user && (
-          <>
-            <Link
-              href="/dashboard"
-              className="flex flex-col items-center justify-center w-full"
-            >
-              <FileText
-                className={`h-5 w-5 ${
-                  pathname.startsWith("/dashboard") ? "text-primary" : ""
-                }`}
-              />
-              <span
-                className={`text-xs mt-1 ${
-                  pathname.startsWith("/dashboard")
-                    ? "text-primary font-medium"
-                    : ""
-                }`}
-              >
-                Biblioteca
-              </span>
-            </Link>
-            <Link
-              href="/certificate/verify"
-              className="flex flex-col items-center justify-center w-full"
-            >
-              <Shield
-                className={`h-5 w-5 ${
-                  pathname.startsWith("/certificate/verify")
-                    ? "text-primary"
-                    : ""
-                }`}
-              />
-              <span
-                className={`text-xs mt-1 ${
-                  pathname.startsWith("/certificate/verify")
-                    ? "text-primary font-medium"
-                    : ""
-                }`}
-              >
-                Verificar
-              </span>
-            </Link>
-            <Link
-              href="/profile"
-              className="flex flex-col items-center justify-center w-full"
-            >
-              <User
-                className={`h-5 w-5 ${
-                  pathname.startsWith("/profile") ? "text-primary" : ""
-                }`}
-              />
-              <span
-                className={`text-xs mt-1 ${
-                  pathname.startsWith("/profile")
-                    ? "text-primary font-medium"
-                    : ""
-                }`}
-              >
-                Perfil
-              </span>
-            </Link>
-          </>
-        )}
+        <Link
+          href="/certificate/verify"
+          className="flex flex-col items-center justify-center w-full"
+        >
+          <Shield
+            className={`h-5 w-5 ${
+              pathname.startsWith("/certificate/verify") ? "text-primary" : ""
+            }`}
+          />
+          <span
+            className={`text-xs mt-1 ${
+              pathname.startsWith("/certificate/verify")
+                ? "text-primary font-medium"
+                : ""
+            }`}
+          >
+            Verificar
+          </span>
+        </Link>
+
+        <Link
+          href="/profile"
+          className="flex flex-col items-center justify-center w-full"
+        >
+          <User
+            className={`h-5 w-5 ${
+              pathname.startsWith("/profile") ? "text-primary" : ""
+            }`}
+          />
+          <span
+            className={`text-xs mt-1 ${
+              pathname.startsWith("/profile") ? "text-primary font-medium" : ""
+            }`}
+          >
+            Perfil
+          </span>
+        </Link>
+
+        <button
+          onClick={handleLogout}
+          className="flex flex-col items-center justify-center w-full text-red-500"
+        >
+          <LogOut className="h-5 w-5" />
+          <span className="text-xs mt-1 font-medium">Salir</span>
+        </button>
       </div>
     </nav>
   );

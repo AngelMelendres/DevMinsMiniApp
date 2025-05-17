@@ -1,7 +1,8 @@
 "use client";
 import { MiniKit, WalletAuthInput } from "@worldcoin/minikit-js";
 import { Button } from "@worldcoin/mini-apps-ui-kit-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const walletAuthInput = (nonce: string): WalletAuthInput => {
   return {
@@ -23,6 +24,13 @@ type User = {
 export const Login = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  // 🧼 Limpiar localStorage y estado al montar
+  useEffect(() => {
+    localStorage.removeItem("user");
+    setUser(null);
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -37,33 +45,38 @@ export const Login = () => {
       if (finalPayload.status === "error") {
         setLoading(false);
         return;
-      } else {
-        const response = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            payload: finalPayload,
-            nonce,
-          }),
-        });
-
-        if (response.status === 200) {
-          setUser(MiniKit.user);
-          console.log("Usuario autenticado:", MiniKit.user); // ← Aquí se muestra en consola
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              walletAddress: MiniKit.user.walletAddress,
-              username: MiniKit.user.username,
-              profilePictureUrl: MiniKit.user.profilePictureUrl,
-            })
-          );
-          window.dispatchEvent(new Event("storage"));
-        }
-        setLoading(false);
       }
+
+      console.log("finalPayload", MiniKit.user);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          payload: finalPayload,
+          nonce,
+          user: {
+            walletAddress: MiniKit.user.walletAddress,
+            username: MiniKit.user.username,
+            profilePictureUrl: MiniKit.user.profilePictureUrl,
+          },
+        }),
+      });
+
+      if (response.status === 200) {
+        setUser(MiniKit.user);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            walletAddress: MiniKit.user.walletAddress,
+            username: MiniKit.user.username,
+            profilePictureUrl: MiniKit.user.profilePictureUrl,
+          })
+        );
+        window.dispatchEvent(new Event("storage"));
+        router.push("/projects"); // redirección al finalizar login
+      }
+
+      setLoading(false);
     } catch (error) {
       console.error("Login error:", error);
       setLoading(false);
@@ -72,14 +85,10 @@ export const Login = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
+      await fetch("/api/auth/logout", { method: "POST" });
       setUser(null);
       localStorage.removeItem("user");
-      window.dispatchEvent(new Event("storage")); 
-      setUser(null);
+      window.dispatchEvent(new Event("storage"));
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -115,7 +124,7 @@ export const Login = () => {
             size="md"
             disabled={loading}
           >
-            {loading ? "Signing Out..." : "Sign Out"}
+            {loading ? "Ingresando..." : "Cerrar Sesión"}
           </Button>
         </div>
       )}

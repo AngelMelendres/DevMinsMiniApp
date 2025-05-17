@@ -1,13 +1,53 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ArrowRight, CreditCard, HelpCircle, LogOut, Settings, Shield, User } from "lucide-react"
-import MobileHeader from "@/components/mobile-header"
-import MobileNavbar from "@/components/mobile-navbar"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  ArrowRight,
+  CreditCard,
+  HelpCircle,
+  LogOut,
+  Settings,
+  Shield,
+  User,
+} from "lucide-react";
+import MobileHeader from "@/components/mobile-header";
+import MobileNavbar from "@/components/mobile-navbar";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
+
+type UserInfo = {
+  walletAddress: string;
+  username: string | null;
+  profilePictureUrl?: string | null;
+};
 
 export default function ProfilePage() {
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setUser(parsed);
+      } catch {
+        setUser(null);
+      }
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    localStorage.removeItem("user");
+    window.dispatchEvent(new Event("storage"));
+    router.push("/");
+  };
+
   return (
     <div className="flex flex-col min-h-screen max-w-md mx-auto bg-background">
       <MobileHeader title="Mi Perfil" />
@@ -17,11 +57,25 @@ export default function ProfilePage() {
           {/* User Info */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="h-8 w-8 text-primary" />
+              {user?.profilePictureUrl ? (
+                <img
+                  src={user.profilePictureUrl}
+                  alt="Avatar"
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+              ) : (
+                <User className="h-8 w-8 text-primary" />
+              )}
             </div>
             <div>
-              <h2 className="font-bold text-lg">Juan Pérez</h2>
-              <p className="text-sm text-muted-foreground">juan@ejemplo.com</p>
+              <h2 className="font-bold text-lg">
+                {user?.username || "Usuario sin nombre"}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {user?.walletAddress
+                  ? `${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}`
+                  : "Wallet no disponible"}
+              </p>
               <div className="flex items-center gap-1 mt-1">
                 <div className="h-2 w-2 rounded-full bg-green-500"></div>
                 <span className="text-xs text-green-600">Identidad verificada</span>
@@ -129,6 +183,7 @@ export default function ProfilePage() {
             </div>
 
             <Button
+              onClick={handleLogout}
               variant="outline"
               className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
             >
@@ -140,5 +195,5 @@ export default function ProfilePage() {
 
       <MobileNavbar />
     </div>
-  )
+  );
 }
