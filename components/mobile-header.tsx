@@ -45,14 +45,6 @@ export default function MobileHeader({
           )}
           <span className="font-semibold">{title}</span>
         </div>
-
-        {user && (
-          <div className="text-sm text-muted-foreground">
-            {user.username
-              ? user.username
-              : `${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}`}
-          </div>
-        )}
       </div>
     </header>
   );

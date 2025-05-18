@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, Shield, User, LogOut } from "lucide-react";
+import { FileText, Shield, User, LogOut, BookOpen } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -67,7 +67,25 @@ export default function MobileNavbar() {
               pathname.startsWith("/projects") ? "text-primary font-medium" : ""
             }`}
           >
-            Mis Proyectos
+            Proyectos
+          </span>
+        </Link>
+
+        <Link
+          href="/library"
+          className="flex flex-col items-center justify-center w-full"
+        >
+          <BookOpen
+            className={`h-5 w-5 ${
+              pathname.startsWith("/library/") ? "text-primary" : ""
+            }`}
+          />
+          <span
+            className={`text-xs mt-1 ${
+              pathname.startsWith("/library/") ? "text-primary font-medium" : ""
+            }`}
+          >
+            Biblioteca
           </span>
         </Link>
 
@@ -109,13 +127,13 @@ export default function MobileNavbar() {
           </span>
         </Link>
 
-        <button
+        {/* <button
           onClick={handleLogout}
           className="flex flex-col items-center justify-center w-full text-red-500"
         >
           <LogOut className="h-5 w-5" />
           <span className="text-xs mt-1 font-medium">Salir</span>
-        </button>
+        </button> */}
       </div>
     </nav>
   );

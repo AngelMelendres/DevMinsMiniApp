@@ -73,13 +73,13 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col min-h-screen max-w-md mx-auto bg-background">
-      <MobileHeader title="Mi Biblioteca" />
+      <MobileHeader title="Proyectos" />
 
       <main className="flex-1 px-4 pb-16">
         <div className="py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-lg font-bold">Mis Proyectos</h1>
-            <Link href="/dashboard/upload">
+            <Link href="/upload/">
               <Button size="sm" className="gap-1">
                 <Upload className="h-3 w-3" /> Nuevo
               </Button>
@@ -157,7 +157,7 @@ export default function DashboardPage() {
               </Link>
             ))}
 
-            <Link href="/dashboard/upload" className="block">
+            <Link href="/upload/" className="block">
               <Card className="border-dashed">
                 <CardContent className="flex flex-col items-center justify-center py-6">
                   <div className="rounded-full bg-primary/10 p-2 mb-2">
